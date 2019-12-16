@@ -97,8 +97,10 @@ data:
 train:
   save_checkpoints_steps: 1000
   train_steps: 80000
+  max_step: 80000
 
 eval:
+  steps: 500
   eval_delay: 300  # Every 5 minutes
   external_evaluators: BLEU
 
