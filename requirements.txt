@@ -1,0 +1,2 @@
+OpenNMT-tf[tensorflow_gpu]
+sentencepiece
