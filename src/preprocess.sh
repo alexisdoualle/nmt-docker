@@ -102,7 +102,8 @@ train:
 eval:
   steps: 500
   eval_delay: 300  # Every 5 minutes
-  external_evaluators: BLEU
+  external_evaluators: bleu
+  export_on_best: bleu
 
 
 ' >> config.yml
