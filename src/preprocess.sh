@@ -104,8 +104,6 @@ eval:
   eval_delay: 300  # Every 5 minutes
   external_evaluators: BLEU
 
-infer:
-  batch_size: 64
 
 ' >> config.yml
 
