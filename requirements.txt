@@ -1,2 +1,2 @@
-OpenNMT-tf[tensorflow_gpu]
+OpenNMT-tf[tensorflow_gpu]==1.22.1
 sentencepiece
