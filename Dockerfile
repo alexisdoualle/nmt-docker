@@ -14,4 +14,8 @@ RUN cmake ..
 RUN make -j $(nproc)
 RUN make install
 RUN ldconfig -v
+run apt install screen
 WORKDIR /usr/wezenmt
+# ENTRYPOINT bash && /bin/bash './data/start.sh'
+# CMD screen -dmS pre bash -c './data/start.sh; exec sh'
+ENTRYPOINT screen -dmS pre bash -c './data/start.sh; exec sh' && bash
