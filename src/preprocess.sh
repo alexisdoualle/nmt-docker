@@ -16,18 +16,22 @@ dir=$1
 sl=$2
 tl=$3
 
-vocab_size=$4
-validationSize=$5
+# vocab_size=$4
+# validationSize=$5
 
 fileName=${1##*/}
 echo $fileName
+echo $dir
 #files=("${@:6}")
 
 # set vocabulary and validation size
-#vocab_size=1000
-#validationSize=1000
+vocab_size=16000
+validationSize=1000
 
-cd $dir
+# mkdir ../data/$dir
+ls
+exit
+cd ../data/$dir
 files=txt/*
 
 # mkdir -p raw_data

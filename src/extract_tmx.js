@@ -27,22 +27,14 @@ if (!fs.existsSync('data/txt/' )){
 
 tmxFileList.forEach(fileName => {
 
-  // var tmxFilePath = fileName
-  // console.log(fileName);
-  
-  
   if (!fileName.endsWith('.tmx')) {console.log('Files needs to end with .tmx'); return}
   fileNameWithoutExtension = fileName.substring(0, fileName.length - 4)
-  console.log(fileNameWithoutExtension);
-  
 
   var stream = fs.createReadStream( dirName+'/tmx/'+ fileNameWithoutExtension + '.tmx');
   var xml = new XmlStream(stream);
   xml.collect('tuv');
 
   var endFilePath = dirName+'/txt/'+ fileNameWithoutExtension.match(/(?!.*\/)(.*)/)[0];
-  console.log(endFilePath);
-  console.log("");
   
   fs.writeFile(endFilePath + '.' + sourceLanguage, '', () => {})
   fs.writeFile(endFilePath + '.' + targetLanguage, '', () => {})
@@ -53,9 +45,16 @@ tmxFileList.forEach(fileName => {
 
   xml.on('endElement: tu', function(item) {
     var efp = endFilePath
-    if (typeof item.tuv[0].seg == 'string') {
-      stream1.write(item.tuv[0].seg + '\n');
-      stream2.write(item.tuv[1].seg + '\n');
+    // Language check
+    if (item.tuv[0].$['xml:lang'].substring(0,2) == sourceLanguage && item.tuv[1].$['xml:lang'].substring(0,2) == targetLanguage) {
+      if (typeof item.tuv[0].seg == 'string') {
+        stream1.write(item.tuv[0].seg + '\n');
+        stream2.write(item.tuv[1].seg + '\n');
+      } else {
+        // TU contains bpt, get $text value
+        stream1.write(item.tuv[0].seg.$text + '\n');
+        stream2.write(item.tuv[1].seg.$text + '\n');
+      }
     }
     
     i++
