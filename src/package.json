@@ -1,0 +1,17 @@
+{
+  "name": "nmt-docker",
+  "version": "1.0.0",
+  "description": "nmt docker",
+  "main": "extract_tmx.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "nmt"
+  ],
+  "author": "alexis",
+  "license": "ISC",
+  "dependencies": {
+    "xml-stream": "^0.4.5"
+  }
+}
