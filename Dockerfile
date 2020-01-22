@@ -14,4 +14,9 @@ RUN cmake ..
 RUN make -j $(nproc)
 RUN make install
 RUN ldconfig -v
+RUN apt-get install curl
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
+RUN apt-get install --yes nodejs
+RUN node -v
+RUN npm -v
 WORKDIR /usr/wezenmt
