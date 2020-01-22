@@ -1,4 +1,5 @@
 all: build kill rm run
+r: kill rm run
 
 build:
 	@echo "\e[1m-------------------------------- Building wezenmt 🔧\e[0m"
