@@ -122,15 +122,15 @@ data:
 train:
   save_checkpoints_steps: 1000
   train_steps: 80000
-  max_step: 80000
+  max_step: 60000
 
 eval:
-  steps: 60000
+  steps: 500
   external_evaluators: BLEU
   export_on_best: bleu
   early_stopping:
-    min_improvement: 0.01
-    steps: 5
+    min_improvement: 0.1
+    steps: 2
 infer:
   batch_size: 64
 
@@ -220,7 +220,8 @@ echo "Vocab size: "$vocab_size >> training-specs.txt
 
 # Run Tensorboard in new process (--bind_all needed to be accessible outside of container)
 pkill tensorboard
-tensorboard --logdir ${fileName}_transformer_model --bind_all &
+#tensorboard --logdir ${fileName}_transformer_model --bind_all &
+./tensorboard.sh ${fileName}_transformer_model
 
 onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval
 
