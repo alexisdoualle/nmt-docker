@@ -29,6 +29,9 @@ fileName=$dir
 vocab_size=16000
 validationSize=1000
 
+# create log output file
+# touch data/preprocess_and_train.log
+
 mkdir data/$dir
 
 cd data/$dir
@@ -222,7 +225,7 @@ pkill tensorboard
 #tensorboard --logdir ${fileName}_transformer_model --bind_all &
 ./tensorboard.sh ${fileName}_transformer_model
 
-onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval
+onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log
 
 exit
 # Use python3 virtualenv with tensorflow installed (and cuda etc.) and OpenNMT-tf to launch training
