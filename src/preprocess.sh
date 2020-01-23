@@ -24,6 +24,10 @@ tl=$3
 fileName=$dir
 
 #files=("${@:6}")
+cd src
+npm install
+cd ..
+node src/extract_tmx.js $sl $tl
 
 # set vocabulary and validation size
 vocab_size=16000
@@ -223,7 +227,7 @@ echo "Vocab size: "$vocab_size >> training-specs.txt
 # Run Tensorboard in new process (--bind_all needed to be accessible outside of container)
 pkill tensorboard
 #tensorboard --logdir ${fileName}_transformer_model --bind_all &
-./tensorboard.sh ${fileName}_transformer_model
+./../../src/tensorboard.sh ${fileName}_transformer_model &
 
 onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log
 

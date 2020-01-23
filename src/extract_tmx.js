@@ -5,7 +5,7 @@ var myArgs = process.argv.slice(2);
 if (myArgs.length < 2) { console.log(`Syntax: node TMXExtract.js sourceLang targetLang
 example:
 
-node TMXExtract.js MF en fr data/tmx/`); return }
+node TMXExtract.js en fr`); return }
 
 /**
  * Extract source and target from Translation Memories for MT training
@@ -16,12 +16,16 @@ var sourceLanguage = myArgs[0]
 var targetLanguage = myArgs[1]
 var tmxFileList;
 
-tmxFileList = fs.readdirSync('data/tmx/'); 
+// tmxFileList = fs.readdirSync('./data'); 
+// console.log(tmxFileList);
+
+// return
+tmxFileList = fs.readdirSync(dirName+'/tmx/'); 
 console.log(tmxFileList);
 
 // Create directory:
-if (!fs.existsSync('data/txt/' )){
-  fs.mkdirSync('data/txt');
+if (!fs.existsSync(dirName+'/txt/' )){
+  fs.mkdirSync(dirName+'/txt');
 }
 
 
