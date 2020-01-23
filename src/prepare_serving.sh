@@ -11,11 +11,13 @@ echo $fileName
 #sl=en
 #tl=sv
 
-cd $dir/$fileName\_transformer_model
+cd data/$dir/$fileName\_transformer_model
 
 # Generate serving config file
-models=$(ls -r export/latest)
+models=$(ls -r export)
 latestModel=$(echo $models | awk '{print $1;}')
+
+echo "**** Latest model: $latestModel (steps)"
 
 # Copy files in '1'
 rm -rf 1
@@ -24,10 +26,10 @@ cd 1
 mkdir assets
 mkdir variables
 cp ../../data/$fileName-$sl$tl.model assets/
-cp ../export/latest/$latestModel/assets/$fileName-$sl$tl.vocab assets/
-cp ../export/latest/$latestModel/variables/variables.data-00000-of-00001 variables/
-cp ../export/latest/$latestModel/variables/variables.index variables/
-cp ../export/latest/$latestModel/saved_model.pb .
+cp ../export/$latestModel/assets/$fileName-$sl$tl.vocab assets/
+cp ../export/$latestModel/variables/variables.data-00000-of-00001 variables/
+cp ../export/$latestModel/variables/variables.index variables/
+cp ../export/$latestModel/saved_model.pb .
 
 cd ..
 rm -rf config.json
@@ -53,19 +55,29 @@ echo '
 }
 ' >> config.json
 
-echo '***removing previous container: ***'
-sudo docker kill mda
-sudo docker container rm mda
+rm -rf ../../models
 
-cd ..
-# Run from "$dir" folder
-# echo 'sudo docker run -td --name mda -p 5000:5000 -v $PWD:/root/models nmtwizard/opennmt-tf --model '$fileName'_transformer_model --model_storage /root/models serve --host 0.0.0.0 --port 5000'
-sudo docker run -td --name mda -p 5000:5000 -v $PWD:/root/models nmtwizard/opennmt-tf --model $fileName\_transformer_model --model_storage /root/models serve --host 0.0.0.0 --port 5000
-echo ''
+mkdir ../../models
+mv 1 ../../models/
+mv config.json ../../models/
+cd ../..
+zip -r models.zip models
 
-echo 'Wait a few seconds and check container status (should be "UP")'
-sleep 3
-sudo docker container list -all
-echo ''
-echo 'If image is running, POST on http://localhost:5000/translate with body: {"src": [{"text": "Hello"}]}'
+echo "Done!"
+
+# echo '***removing previous container: ***'
+# sudo docker kill mda
+# sudo docker container rm mda
+
+# cd ..
+# # Run from "$dir" folder
+# # echo 'sudo docker run -td --name mda -p 5000:5000 -v $PWD:/root/models nmtwizard/opennmt-tf --model '$fileName'_transformer_model --model_storage /root/models serve --host 0.0.0.0 --port 5000'
+# sudo docker run -td --name mda -p 5000:5000 -v $PWD:/root/models nmtwizard/opennmt-tf --model $fileName\_transformer_model --model_storage /root/models serve --host 0.0.0.0 --port 5000
+# echo ''
+
+# echo 'Wait a few seconds and check container status (should be "UP")'
+# sleep 3
+# sudo docker container list -all
+# echo ''
+# echo 'If image is running, POST on http://localhost:5000/translate with body: {"src": [{"text": "Hello"}]}'
 

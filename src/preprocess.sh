@@ -9,21 +9,15 @@
 ##################################################################################
 
 # Files and directory
-# dir=Motoblouz
-# fileName=Motoblouz_BLOG_FR-ES
 dir=$1
 # set source and target languages
 sl=$2
 tl=$3
 
-# vocab_size=$4
-# validationSize=$5
-
 # filename same value as dir
-# fileName=${1##*/}
 fileName=$dir
 
-#files=("${@:6}")
+# Extract data from TMX files
 cd src
 npm install
 cd ..
@@ -131,7 +125,7 @@ train:
   max_step: 60000
 
 eval:
-  steps: 500
+  steps: 200
   external_evaluators: BLEU
   export_on_best: bleu
   early_stopping:
@@ -227,9 +221,15 @@ echo "Vocab size: "$vocab_size >> training-specs.txt
 # Run Tensorboard in new process (--bind_all needed to be accessible outside of container)
 pkill tensorboard
 #tensorboard --logdir ${fileName}_transformer_model --bind_all &
-./../../src/tensorboard.sh ${fileName}_transformer_model &
+./../../src/tensorboard.sh $fileName/${fileName}_transformer_model &
 
 onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log
+
+# After training is completed
+cd ../..
+./src/prepare_serving.sh $1 $2 $3
+
+# zip -R $fileName_transformer_model/export/
 
 exit
 # Use python3 virtualenv with tensorflow installed (and cuda etc.) and OpenNMT-tf to launch training

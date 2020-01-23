@@ -19,10 +19,9 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
 RUN apt-get install --yes nodejs
 RUN node -v
 RUN npm -v
+RUN apt-get install zip
 WORKDIR /home/wezenmt
 COPY ./src/start.sh /
 RUN chmod +x /start.sh
 ENTRYPOINT ["sh", "/start.sh"]
-CMD ["test", "en", "sv"]
-# ENTRYPOINT src/start.sh && /bin/bash
-# CMD "echo lol"
+# CMD ["test", "en", "sv"] 

@@ -2,5 +2,9 @@
 
 dir=$1
 # Give some time for model initialization to happen
-sleep 30
-tensorboard --logdir=$dir --bind_all
+echo "**** Starting tensorboard in 60s ****"
+sleep 60
+echo "*********************************"
+echo "**** Tensorboard starting... ****"
+echo "*********************************"
+tensorboard --logdir=../data/$dir --bind_all

@@ -63,15 +63,20 @@ tmxFileList.forEach(fileName => {
     
     i++
     if (i%1000 === 0) {
-      process.stdout.clearLine();
-      process.stdout.cursorTo(0);
-      process.stdout.write(i + ' lines extracted in ' + efp+'.'+sourceLanguage +' and .'+targetLanguage);
+      if (process.stdout.clearLine) {
+        process.stdout.clearLine();
+        process.stdout.cursorTo(0);
+        process.stdout.write(i + ' lines extracted in ' + efp+'.'+sourceLanguage +' and .'+targetLanguage);
+      }
     }
   });
   xml.on('end', (item) => {
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
-    process.stdout.write(i + ' lines extracted in ' + endFilePath+'.'+sourceLanguage +' and .'+targetLanguage);
-    process.stdout.write("\n")
+    // clearLine may cause problem in docker container
+    if (process.stdout.clearLine) {
+      process.stdout.clearLine();
+      process.stdout.cursorTo(0);
+      process.stdout.write(i + ' lines extracted in ' + endFilePath+'.'+sourceLanguage +' and .'+targetLanguage);
+      process.stdout.write("\n")
+    }
   })
 })
