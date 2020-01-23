@@ -16,20 +16,40 @@ dir=$1
 sl=$2
 tl=$3
 
-vocab_size=$4
-validationSize=$5
+# vocab_size=$4
+# validationSize=$5
 
-fileName=${1##*/}
-echo $fileName
+# filename same value as dir
+# fileName=${1##*/}
+fileName=$dir
+
 #files=("${@:6}")
+cd src
+npm install
+cd ..
+node src/extract_tmx.js $sl $tl
 
 # set vocabulary and validation size
-#vocab_size=1000
-#validationSize=1000
+vocab_size=16000
+validationSize=1000
 
-cd $dir
-files=txt/*
+# create log output file
+# touch data/preprocess_and_train.log
 
+mkdir data/$dir
+
+cd data/$dir
+
+# Path where the source text files are located
+txt=../txt
+
+files=$txt/*
+echo ""
+echo "Found following source files:"
+for file in $files; do
+  echo $file
+done
+echo ""
 # mkdir -p raw_data
 # cd raw_data
 
@@ -65,8 +85,8 @@ for arg in $files; do
     echo "$file"":"
 
     # Check that files have the same number of lines
-    slines=$(wc -l txt/$file.$sl | cut -f1 -d' ')
-    tlines=$(wc -l txt/$file.$tl | cut -f1 -d' ')
+    slines=$(wc -l $txt/$file.$sl | cut -f1 -d' ')
+    tlines=$(wc -l $txt/$file.$tl | cut -f1 -d' ')
     if [ $slines -eq $tlines ]; then
       echo "number of lines match: $slines"
     else
@@ -74,10 +94,22 @@ for arg in $files; do
       exit
     fi
 
-    head -n -$validationSize txt/$file.$sl >> $fileName-train.$sl
-    head -n -$validationSize txt/$file.$tl >> $fileName-train.$tl
-    tail -n -$validationSize txt/$file.$sl >> $fileName-valid.$sl
-    tail -n -$validationSize txt/$file.$tl >> $fileName-valid.$tl
+    half=$(($slines/2))
+    echo "number of lines smaller than validation size, using half of available data ($half lines)"
+    
+    if (($slines/2 < $validationSize)); then
+      head -n -$half $txt/$file.$sl >> $fileName-train.$sl
+      head -n -$half $txt/$file.$tl >> $fileName-train.$tl
+      tail -n -$half $txt/$file.$sl >> $fileName-valid.$sl
+      tail -n -$half $txt/$file.$tl >> $fileName-valid.$tl
+    else
+      head -n -$validationSize $txt/$file.$sl >> $fileName-train.$sl
+      head -n -$validationSize $txt/$file.$tl >> $fileName-train.$tl
+      tail -n -$validationSize $txt/$file.$sl >> $fileName-valid.$sl
+      tail -n -$validationSize $txt/$file.$tl >> $fileName-valid.$tl
+    fi
+
+
 done
 
 # Create config files:
@@ -96,15 +128,17 @@ data:
 
 train:
   save_checkpoints_steps: 1000
-  train_steps: 80000
-  max_step: 80000
+  max_step: 60000
 
 eval:
   steps: 500
-  eval_delay: 300  # Every 5 minutes
-  external_evaluators: bleu
+  external_evaluators: BLEU
   export_on_best: bleu
-
+  early_stopping:
+    min_improvement: 0.1
+    steps: 2
+infer:
+  batch_size: 64
 
 ' >> config.yml
 
@@ -136,7 +170,7 @@ if true; then
  done
 #  python -c "import sentencepiece as spm; spm.SentencePieceTrainer.Train('--input=data/train.txt --model_prefix=$fileName-$sl$tl --vocab_size=$vocab_size --character_coverage=1 --input_sentence_size=1000000 --shuffle_input_sentence=true');"
  spm_train --input=data/train.txt --model_prefix=$fileName-$sl$tl \
-           --vocab_size=$vocab_size --character_coverage=1 --input_sentence_size=1000000 --shuffle_input_sentence=true
+           --vocab_size=300 --character_coverage=1 --hard_vocab_limit=false --input_sentence_size=1000000 --shuffle_input_sentence=true
  rm data/train.txt
 fi
 
@@ -190,22 +224,21 @@ echo "Size of validation corpus: "$validationSize" lines" >> training-specs.txt
 echo "Tokenizer: Sentencepiece " >> training-specs.txt
 echo "Vocab size: "$vocab_size >> training-specs.txt
 
-# OLD onmt-main train --with_eval --model_type Transformer --config config.yml --auto_config 
-# onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval
-#--input_sentence_size=2000000
-#--shuffle_input_sentence=true
+# Run Tensorboard in new process (--bind_all needed to be accessible outside of container)
+pkill tensorboard
+#tensorboard --logdir ${fileName}_transformer_model --bind_all &
+./../../src/tensorboard.sh ${fileName}_transformer_model &
+
+onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log
 
 exit
 # Use python3 virtualenv with tensorflow installed (and cuda etc.) and OpenNMT-tf to launch training
 
-# TRAINING (cd $dir)
+# TRAINING (cd $dir) OLD (1.x)
 # onmt-main train_and_eval --model_type Transformer --config config.yml --auto_config
 
-# MONITORING
-# tensorboard --logdir="$fileName_transformer_model"
-
 # Generate serving config file
-./prepareServing.sh
+# ./prepareServing.sh
 
 # SERVING
 # From OpenNMT-tf/scripts/mf: servers
