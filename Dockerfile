@@ -3,6 +3,7 @@ WORKDIR /home/wezenmt
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 RUN apt update
+RUN apt install nvidia-modprobe
 RUN apt install nano
 RUN apt install git -y
 RUN git clone https://github.com/google/sentencepiece.git

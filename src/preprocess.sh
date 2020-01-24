@@ -14,6 +14,10 @@ dir=$1
 sl=$2
 tl=$3
 
+export CUDA_VISIBLE_DEVICES=0,1,2,3
+export NVIDIA_VISIBLE_DEVICES=all
+export NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
 # filename same value as dir
 fileName=$dir
 
@@ -129,7 +133,7 @@ eval:
   external_evaluators: BLEU
   export_on_best: bleu
   early_stopping:
-    min_improvement: 0.1
+    min_improvement: 1
     steps: 2
 infer:
   batch_size: 64
@@ -223,7 +227,7 @@ pkill tensorboard
 #tensorboard --logdir ${fileName}_transformer_model --bind_all &
 ./../../src/tensorboard.sh $fileName/${fileName}_transformer_model &
 
-onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log
+onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log --num_gpus 4
 
 # After training is completed
 cd ../..
