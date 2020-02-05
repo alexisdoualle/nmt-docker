@@ -20,9 +20,9 @@ latestModel=$(echo $models | awk '{print $1;}')
 echo "**** Latest model: $latestModel (steps)"
 
 # Copy files in '1'
-rm -rf 1
-mkdir 1
-cd 1
+rm -rf saved_model
+mkdir saved_model
+cd saved_model
 mkdir assets
 mkdir variables
 cp ../../data/$fileName-$sl$tl.model assets/
@@ -43,13 +43,13 @@ echo '
     "tokenization": {
         "source": {
             "mode": "none",
-            "sp_model_path": "${MODEL_DIR}/1/assets/'$fileName-$sl$tl'.model",
-            "vocabulary": "${MODEL_DIR}/1/assets/'$fileName-$sl$tl'.vocab"
+            "sp_model_path": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.model",
+            "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.vocab"
         },
         "target": {
             "mode": "none",
-            "sp_model_path": "${MODEL_DIR}/1/assets/'$fileName-$sl$tl'.model",
-            "vocabulary": "${MODEL_DIR}/1/assets/'$fileName-$sl$tl'.vocab"
+            "sp_model_path": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.model",
+            "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.vocab"
         }
     }
 }
@@ -58,7 +58,7 @@ echo '
 rm -rf ../../models
 
 mkdir ../../models
-mv 1 ../../models/
+mv saved_model ../../models/
 mv config.json ../../models/
 cd ../..
 zip -r models.zip models
