@@ -227,7 +227,7 @@ pkill tensorboard
 #tensorboard --logdir ${fileName}_transformer_model --bind_all &
 ./../../src/tensorboard.sh $fileName/${fileName}_transformer_model &
 
-onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log --num_gpus 4
+onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log --num_gpus 1
 
 # After training is completed
 cd ../..

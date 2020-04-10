@@ -58,8 +58,9 @@ echo '
 rm -rf ../../models
 
 mkdir ../../models
-mv saved_model ../../models/
-mv config.json ../../models/
+mkdir ../../models/${fileName}_transformer_model
+mv saved_model ../../models/${fileName}_transformer_model
+mv config.json ../../models/${fileName}_transformer_model
 cd ../..
 zip -r models.zip models
 
