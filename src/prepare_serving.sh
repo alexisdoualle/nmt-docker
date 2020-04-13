@@ -1,5 +1,10 @@
 #!/bin/bash
 
+echo "*********************************"
+echo "** Preparing model for serving **"
+echo "*********************************"
+echo ""
+
 dir=$1
 # set source and target languages
 sl=$2
@@ -27,8 +32,7 @@ mkdir assets
 mkdir variables
 cp ../../data/$fileName-$sl$tl.model assets/
 cp ../export/$latestModel/assets/$fileName-$sl$tl.vocab assets/
-cp ../export/$latestModel/variables/variables.data-00000-of-00001 variables/
-cp ../export/$latestModel/variables/variables.index variables/
+cp ../export/$latestModel/variables/* variables/
 cp ../export/$latestModel/saved_model.pb .
 
 cd ..

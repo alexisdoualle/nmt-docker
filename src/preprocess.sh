@@ -93,9 +93,9 @@ for arg in $files; do
     fi
 
     half=$(($slines/2))
-    echo "number of lines smaller than validation size, using half of available data ($half lines)"
     
-    if (($slines/2 < $validationSize)); then
+    if (($half < $validationSize)); then
+      echo "number of lines smaller than validation size, using half of available data ($half lines)"
       head -n -$half $txt/$file.$sl >> $fileName-train.$sl
       head -n -$half $txt/$file.$tl >> $fileName-train.$tl
       tail -n -$half $txt/$file.$sl >> $fileName-valid.$sl
@@ -133,8 +133,8 @@ eval:
   external_evaluators: BLEU
   export_on_best: bleu
   early_stopping:
-    min_improvement: 1
-    steps: 2
+    min_improvement: 0.01
+    steps: 4
 infer:
   batch_size: 64
 
@@ -168,7 +168,7 @@ if true; then
  done
 #  python -c "import sentencepiece as spm; spm.SentencePieceTrainer.Train('--input=data/train.txt --model_prefix=$fileName-$sl$tl --vocab_size=$vocab_size --character_coverage=1 --input_sentence_size=1000000 --shuffle_input_sentence=true');"
  spm_train --input=data/train.txt --model_prefix=$fileName-$sl$tl \
-           --vocab_size=300 --character_coverage=1 --hard_vocab_limit=false --input_sentence_size=1000000 --shuffle_input_sentence=true
+           --vocab_size=10000 --character_coverage=1 --hard_vocab_limit=false --input_sentence_size=1000000 --shuffle_input_sentence=true
  rm data/train.txt
 fi
 
@@ -227,7 +227,7 @@ pkill tensorboard
 #tensorboard --logdir ${fileName}_transformer_model --bind_all &
 ./../../src/tensorboard.sh $fileName/${fileName}_transformer_model &
 
-onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log --num_gpus 1
+onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log --num_gpus 4
 
 # After training is completed
 cd ../..

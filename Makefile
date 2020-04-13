@@ -14,7 +14,7 @@ rm:
 	@sudo docker rm nmt
 rn:
 	@echo "\e[1m------------------------------- Launching wezenmt 🚀\e[0m"
-	@sudo docker run -d --name nmt -p 6006:6006 -v `pwd`/data:/home/wezenmt/data -v `pwd`/src:/home/wezenmt/src wezenmt test en ko
+	@sudo docker run -d --name nmt -p 6006:6006 -v `pwd`/data:/home/wezenmt/data -v `pwd`/src:/home/wezenmt/src wezenmt test en ja
 	# @sudo docker exec -it nmt /bin/bash
 log:
 	@sudo docker logs nmt --follow
