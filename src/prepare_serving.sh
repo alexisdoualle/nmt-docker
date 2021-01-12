@@ -62,9 +62,11 @@ echo '
 rm -rf ../../models
 
 mkdir ../../models
-mkdir ../../models/${fileName}_transformer_model
-mv saved_model ../../models/${fileName}_transformer_model
-mv config.json ../../models/${fileName}_transformer_model
+# mkdir ../../models/${fileName}_transformer_model
+# mv saved_model ../../models/${fileName}_transformer_model
+# mv config.json ../../models/${fileName}_transformer_model
+mv saved_model ../../models/
+mv config.json ../../models/
 cd ../..
 zip -r models.zip models
 

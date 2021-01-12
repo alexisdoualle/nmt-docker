@@ -39,7 +39,7 @@ mkdir data/$dir
 cd data/$dir
 
 # Path where the source text files are located
-txt=../txt
+txt=../data/txt
 
 files=$txt/*
 echo ""

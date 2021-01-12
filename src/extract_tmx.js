@@ -11,7 +11,8 @@ node TMXExtract.js en fr`); return }
  * Extract source and target from Translation Memories for MT training
  * 1 TM segment => 1 plain text line in each file (source and target)
  */
-var dirName = 'data'
+var dirNameToExtract = 'data_to_extract/tmx/';
+var dirNameAfterExtraction = 'extracted_data/';
 var sourceLanguage = myArgs[0]
 var targetLanguage = myArgs[1]
 var tmxFileList;
@@ -20,12 +21,12 @@ var tmxFileList;
 // console.log(tmxFileList);
 
 // return
-tmxFileList = fs.readdirSync(dirName+'/tmx/'); 
+tmxFileList = fs.readdirSync(dirNameToExtract); 
 console.log(tmxFileList);
 
 // Create directory:
-if (!fs.existsSync(dirName+'/txt/' )){
-  fs.mkdirSync(dirName+'/txt');
+if (!fs.existsSync(dirNameAfterExtraction)){
+  fs.mkdirSync(dirNameAfterExtraction);
 }
 
 
@@ -34,11 +35,11 @@ tmxFileList.forEach(fileName => {
   if (!fileName.endsWith('.tmx')) {console.log('Files needs to end with .tmx'); return}
   fileNameWithoutExtension = fileName.substring(0, fileName.length - 4)
 
-  var stream = fs.createReadStream( dirName+'/tmx/'+ fileNameWithoutExtension + '.tmx');
+  var stream = fs.createReadStream( dirNameToExtract + fileNameWithoutExtension + '.tmx');
   var xml = new XmlStream(stream);
   xml.collect('tuv');
 
-  var endFilePath = dirName+'/txt/'+ fileNameWithoutExtension.match(/(?!.*\/)(.*)/)[0];
+  var endFilePath = dirNameAfterExtraction + fileNameWithoutExtension.match(/(?!.*\/)(.*)/)[0];
   
   fs.writeFile(endFilePath + '.' + sourceLanguage, '', () => {})
   fs.writeFile(endFilePath + '.' + targetLanguage, '', () => {})
