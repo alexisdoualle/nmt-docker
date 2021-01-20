@@ -14,7 +14,7 @@ dir=$1
 sl=$2
 tl=$3
 
-export CUDA_VISIBLE_DEVICES=0,1,2,3
+export CUDA_VISIBLE_DEVICES=0
 export NVIDIA_VISIBLE_DEVICES=all
 export NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
@@ -125,8 +125,10 @@ data:
   target_vocabulary: data/'$fileName-$sl$tl.vocab'
 
 train:
-  save_checkpoints_steps: 1000
-  max_step: 60000
+  save_checkpoints_steps: 5000
+  max_step: 1000000
+  sample_buffer_size
+  batch_type: examples
 
 eval:
   steps: 200
@@ -135,8 +137,7 @@ eval:
   early_stopping:
     min_improvement: 0.01
     steps: 4
-infer:
-  batch_size: 64
+  max_exports_to_keep: 2
 
 ' >> config.yml
 
@@ -227,7 +228,7 @@ pkill tensorboard
 #tensorboard --logdir ${fileName}_transformer_model --bind_all &
 ./../../src/tensorboard.sh $fileName/${fileName}_transformer_model &
 
-onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log --num_gpus 4
+onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log --num_gpus 1
 
 # After training is completed
 cd ../..
@@ -248,6 +249,6 @@ exit
 # From OpenNMT-tf/scripts/mf: servers
 # sudo docker run -td --name <name> -p 5000:5000 -v $PWD:/root/models nmtwizard/opennmt-tf --model <model-name> --model_storage /root/models serve --host 0.0.0.0 --port 5000
 
-sudo docker run -td --name mda -p 5000:5000 -v $PWD:/root/models nmtwizard/opennmt-tf --model MF20190726enGBfrFR_transformer_model --model_storage /root/models serve --host 0.0.0.0 --port 5000
+sudo docker run -td --name mda -p 5000:5000 -v $PWD:/root/models nmtwizard/opennmt-tf --model test_transformer_model --model_storage /root/models serve --host 0.0.0.0 --port 5000
 
 #./preprocess_sp.sh ENSV_Para_bikes en sv ENSV_Para_bikes/Bike_descriptions ENSV_Para_bikes/Product_descriptions_bikes ENSV_Para_bikes/Keywords ENSV_Para_bikes/en-sv.bicleaner07
