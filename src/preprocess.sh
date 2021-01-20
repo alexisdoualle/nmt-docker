@@ -127,7 +127,7 @@ data:
 train:
   save_checkpoints_steps: 5000
   max_step: 1000000
-  sample_buffer_size
+  sample_buffer_size: -1
   batch_type: examples
 
 eval:
