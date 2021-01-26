@@ -1,4 +1,4 @@
-OpenNMT-tf[tensorflow_gpu]
+OpenNMT-tf[tensorflow_gpu]==v2.4.0
 tensorboard
 sentencepiece
 awscli

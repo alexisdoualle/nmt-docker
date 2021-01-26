@@ -34,10 +34,13 @@ validationSize=1000
 # create log output file
 # touch data/preprocess_and_train.log
 
+rm -rf data/$dir
+rm -rf data/models
+rm -rf data/models.zip
+
 mkdir data/$dir
 
 cd data/$dir
-
 # Path where the source text files are located
 txt=../txt
 
@@ -125,21 +128,28 @@ data:
   target_vocabulary: data/'$fileName-$sl$tl.vocab'
 
 train:
-  save_checkpoints_steps: 5000
+  save_checkpoints_steps: 2000
   max_step: 1000000
-  sample_buffer_size: -1
-  batch_type: examples
+  early_stopping:
+    min_improvement: 0.005
+    steps: 4
 
 eval:
-  steps: 200
+  steps: 2000
   external_evaluators: BLEU
   export_on_best: bleu
-  early_stopping:
-    min_improvement: 0.01
-    steps: 4
-  max_exports_to_keep: 2
+
+infer:
+  batch_size: 64
 
 ' >> config.yml
+
+  # batch_type: examples
+  # batch_size: 32
+
+  # early_stopping:
+  #   min_improvement: 0.01
+  #   steps: 4
 
 # for arg in "${files[@]}"; do
 #    echo "$arg"
@@ -228,10 +238,11 @@ pkill tensorboard
 #tensorboard --logdir ${fileName}_transformer_model --bind_all &
 ./../../src/tensorboard.sh $fileName/${fileName}_transformer_model &
 
-onmt-main --model_type Transformer --config config.yml --auto_config train --with_eval >> preprocess_and_train.log --num_gpus 1
+onmt-main --model_type Transformer --config config.yml --auto_config --gpu_allow_growth train --with_eval >> preprocess_and_train.log --num_gpus 1
 
 # After training is completed
 cd ../..
+chmod -R 777 ./
 ./src/prepare_serving.sh $1 $2 $3
 
 # zip -R $fileName_transformer_model/export/

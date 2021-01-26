@@ -67,6 +67,7 @@ mv saved_model ../../models/${fileName}_transformer_model
 mv config.json ../../models/${fileName}_transformer_model
 cd ../..
 zip -r models.zip models
+chmod -R 777 ./
 
 echo "Done!"
 
