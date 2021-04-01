@@ -3,3 +3,4 @@ src/node_modules/**
 node_modules
 src/data_to_extract
 src/extracted_data
+ignore
