@@ -17,11 +17,13 @@ tl=$3
 export CUDA_VISIBLE_DEVICES=0
 export NVIDIA_VISIBLE_DEVICES=all
 export NVIDIA_DRIVER_CAPABILITIES=compute,utility
+export TF_FORCE_GPU_ALLOW_GROWTH=true
 
 # filename same value as dir
 fileName=$dir
 
 # Extract data from TMX files
+ls
 cd src
 npm install
 cd ..
@@ -120,22 +122,24 @@ echo '
 model_dir: '$fileName'_transformer_model
 
 data:
-  train_features_file: data/'$fileName-'train.'$sl'
-  train_labels_file: data/'$fileName-'train.'$tl'
-  eval_features_file: data/'$fileName-'valid.'$sl'
-  eval_labels_file: data/'$fileName-'valid.'$tl'
-  source_vocabulary: data/'$fileName-$sl$tl.vocab'
-  target_vocabulary: data/'$fileName-$sl$tl.vocab'
+  train_features_file: '$fileName-'train.'$sl'.tok
+  train_labels_file: '$fileName-'train.'$tl'.tok
+  eval_features_file: '$fileName-'valid.'$sl'.tok
+  eval_labels_file: '$fileName-'valid.'$tl'.tok
+  source_vocabulary: '$fileName-$sl.vocab'
+  target_vocabulary: '$fileName-$tl.vocab'
+  source_tokenization: token-config.yml
+  target_tokenization: token-config.yml
 
 train:
-  save_checkpoints_steps: 2000
+  save_checkpoints_steps: 1000
   max_step: 1000000
   early_stopping:
     min_improvement: 0.005
     steps: 4
 
 eval:
-  steps: 2000
+  steps: 500
   external_evaluators: BLEU
   export_on_best: bleu
 
@@ -143,6 +147,16 @@ infer:
   batch_size: 64
 
 ' >> config.yml
+
+echo '
+type: OpenNMTTokenizer
+params:
+  mode: aggressive
+  joiner_annotate: true
+  segment_numbers: true
+  segment_alphabet_change: true
+
+' >> token-config.yml
 
   # batch_type: examples
   # batch_size: 32
@@ -160,69 +174,103 @@ infer:
 
 # set training, validation, and test corpuses
 corpus[1]=$fileName-train
+echo "$0: Training sentencepiece model"
+
+# if true; then
+# #  mkdir -p data
+#  echo "$0: Training sentencepiece model"
+#  rm -f train.txt
+#  ls .
+#  for ((i=1; i<= ${#corpus[@]}; i++))
+#  do
+#   for f in ${corpus[$i]}.$sl
+#    do
+#     cat $f >> train.$sl
+#    done
+#   for g in ${corpus[$i]}.$tl
+#    do
+#     cat $g >> train.$tl
+#   done
+#  done
+# --tokenizer_config token-config.yml --sentencepiece input_sentence_size=300000 shuffle_input_sentence=true
+cat $fileName-train.$sl | onmt-tokenize-text --tokenizer_config token-config.yml >> $fileName-train.$sl.tok
+cat $fileName-valid.$sl | onmt-tokenize-text --tokenizer_config token-config.yml >> $fileName-valid.$sl.tok
+cat $fileName-train.$tl | onmt-tokenize-text --tokenizer_config token-config.yml >> $fileName-train.$tl.tok
+cat $fileName-valid.$tl | onmt-tokenize-text --tokenizer_config token-config.yml >> $fileName-valid.$tl.tok
+onmt-build-vocab --save_vocab $fileName-$sl.vocab --size 20000 $fileName-train.$sl.tok --tokenizer_config token-config.yml
+onmt-build-vocab --save_vocab $fileName-$tl.vocab --size 20000 $fileName-train.$tl.tok --tokenizer_config token-config.yml
+#  rm data/train.txt
+# fi
+
+# cat data/istores/istores-valid.en | onmt-tokenize-text --tokenizer_config data/istores/token-config.yml >> lol.txt
+# exit
+echo "End of sentencepiece training"
+echo "***"
+echo ""
+
 # corpus[2]=training-parallel-commoncrawl
 # etc...
 
 # Data preparation using SentencePiece
 # First we concat all the datasets to train the SP model
-if true; then
- mkdir -p data
- echo "$0: Training sentencepiece model"
- rm -f data/train.txt
- ls .
- for ((i=1; i<= ${#corpus[@]}; i++))
- do
-  for f in ${corpus[$i]}.$sl ${corpus[$i]}.$tl
-   do
-    cat $f >> data/train.txt
-   done
- done
-#  python -c "import sentencepiece as spm; spm.SentencePieceTrainer.Train('--input=data/train.txt --model_prefix=$fileName-$sl$tl --vocab_size=$vocab_size --character_coverage=1 --input_sentence_size=1000000 --shuffle_input_sentence=true');"
- spm_train --input=data/train.txt --model_prefix=$fileName-$sl$tl \
-           --vocab_size=10000 --character_coverage=1 --hard_vocab_limit=false --input_sentence_size=1000000 --shuffle_input_sentence=true
- rm data/train.txt
-fi
+# if true; then
+#  mkdir -p data
+#  echo "$0: Training sentencepiece model"
+#  rm -f data/train.txt
+#  ls .
+#  for ((i=1; i<= ${#corpus[@]}; i++))
+#  do
+#   for f in ${corpus[$i]}.$sl ${corpus[$i]}.$tl
+#    do
+#     cat $f >> data/train.txt
+#    done
+#  done
+# #  python -c "import sentencepiece as spm; spm.SentencePieceTrainer.Train('--input=data/train.txt --model_prefix=$fileName-$sl$tl --vocab_size=$vocab_size --character_coverage=1 --input_sentence_size=1000000 --shuffle_input_sentence=true');"
+#  spm_train --input=data/train.txt --model_prefix=$fileName-$sl$tl \
+#            --vocab_size=10000 --character_coverage=1 --hard_vocab_limit=false --input_sentence_size=1000000 --shuffle_input_sentence=true
+#  rm data/train.txt
+# fi
 
-# Second we use the trained model to tokenize all the files
-if true; then
- echo "$0: Tokenizing with sentencepiece model"
- rm -f data/train.txt
- for ((i=1; i<= ${#corpus[@]}; i++))
- do
-  for f in ${corpus[$i]}.$sl ${corpus[$i]}.$tl
-   do
-    file=$(basename $f)
-    spm_encode --model=$fileName-$sl$tl.model < $f > data/$file.sp
-   done
- done
-fi
+# # Second we use the trained model to tokenize all the files
+# if true; then
+#  echo "$0: Tokenizing with sentencepiece model"
+#  rm -f data/train.txt
+#  for ((i=1; i<= ${#corpus[@]}; i++))
+#  do
+#   for f in ${corpus[$i]}.$sl ${corpus[$i]}.$tl
+#    do
+#     file=$(basename $f)
+#     spm_encode --model=$fileName-$sl$tl.model < $f > data/$file.sp
+#    done
+#  done
+# fi
 
-# We concat the training sets into two (src/tgt) tokenized files
-if true; then
- cat data/*.$sl.sp > data/$fileName-train.$sl
- cat data/*.$tl.sp > data/$fileName-train.$tl
-fi
+# # We concat the training sets into two (src/tgt) tokenized files
+# if true; then
+#  cat data/*.$sl.sp > data/$fileName-train.$sl
+#  cat data/*.$tl.sp > data/$fileName-train.$tl
+# fi
 
-#  We use the same tokenization method for a valid set (and test set)
-echo "creating validation files"
-if true; then
-    spm_encode --model=$fileName-$sl$tl.model < $fileName-valid.$sl > data/$fileName-valid.$sl
-    spm_encode --model=$fileName-$sl$tl.model < $fileName-valid.$tl > data/$fileName-valid.$tl
-    # spm_encode --model=$fileName-$sl$tl.model < test.$sl-$tl.$sl > data/test.$sl
-    # spm_encode --model=$fileName-$sl$tl.model < test.$sl-$tl.$tl > data/test.$tl
-fi
-# Let's finish and clean up
-mv $fileName-$sl$tl.model data/$fileName-$sl$tl.model
+# #  We use the same tokenization method for a valid set (and test set)
+# echo "creating validation files"
+# if true; then
+#     spm_encode --model=$fileName-$sl$tl.model < $fileName-valid.$sl > data/$fileName-valid.$sl
+#     spm_encode --model=$fileName-$sl$tl.model < $fileName-valid.$tl > data/$fileName-valid.$tl
+#     # spm_encode --model=$fileName-$sl$tl.model < test.$sl-$tl.$sl > data/test.$sl
+#     # spm_encode --model=$fileName-$sl$tl.model < test.$sl-$tl.$tl > data/test.$tl
+# fi
+# # Let's finish and clean up
+# mv $fileName-$sl$tl.model data/$fileName-$sl$tl.model
 
-# We keep the first field of the vocab file generated by SentencePiece and remove the first line <unk>
-cut -f 1 $fileName-$sl$tl.vocab | tail -n +2 > data/$fileName-$sl$tl.vocab.tmp
+# # We keep the first field of the vocab file generated by SentencePiece and remove the first line <unk>
+# cut -f 1 $fileName-$sl$tl.vocab | tail -n +2 > data/$fileName-$sl$tl.vocab.tmp
 
-# we add the <blank> word in first position, needed for OpenNMT-TF
-sed -i '1i<blank>' data/$fileName-$sl$tl.vocab.tmp
+# # we add the <blank> word in first position, needed for OpenNMT-TF
+# sed -i '1i<blank>' data/$fileName-$sl$tl.vocab.tmp
 
-# Last tweak we replace the empty line supposed to be the "tab" character (removed by the cut above)
-perl -pe '$/=""; s/\n\n/\n\t\n/;' data/$fileName-$sl$tl.vocab.tmp > data/$fileName-$sl$tl.vocab
-rm data/$fileName-$sl$tl.vocab.tmp
+# # Last tweak we replace the empty line supposed to be the "tab" character (removed by the cut above)
+# perl -pe '$/=""; s/\n\n/\n\t\n/;' data/$fileName-$sl$tl.vocab.tmp > data/$fileName-$sl$tl.vocab
+# rm data/$fileName-$sl$tl.vocab.tmp
 
 # Spec file
 rm -rf training-specs.txt
@@ -242,7 +290,7 @@ onmt-main --model_type Transformer --config config.yml --auto_config --gpu_allow
 
 # After training is completed
 cd ../..
-chmod -R 777 ./
+# chmod -R 777 ./
 ./src/prepare_serving.sh $1 $2 $3
 
 # zip -R $fileName_transformer_model/export/

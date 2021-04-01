@@ -14,7 +14,13 @@ rm:
 	@sudo docker rm nmt
 rn:
 	@echo "\e[1m------------------------------- Launching wezenmt 🚀\e[0m"
-	@sudo docker run -d --name nmt -p 6006:6006 -v `pwd`/data:/home/wezenmt/data -v `pwd`/src:/home/wezenmt/src --gpus=all wezenmt istores en nb
-	# @sudo docker exec -it nmt /bin/bash
+	@sudo docker run -d --name nmt -p 6006:6006 -v `pwd`/data:/root/data -v `pwd`/src:/root/src --gpus=all wezenmt istores en nb
+
+shell:
+	@sudo docker run --entrypoint bash -it --name nmt -p 6006:6006 -v `pwd`/data:/root/data -v `pwd`/src:/root/src --gpus=all wezenmt
+
+attach_shell:
+	@sudo docker exec -it nmt bash
+
 log:
 	@sudo docker logs nmt --follow

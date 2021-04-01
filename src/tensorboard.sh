@@ -7,4 +7,4 @@ sleep 60
 echo "*********************************"
 echo "**** Tensorboard starting... ****"
 echo "*********************************"
-tensorboard --logdir=../data/$dir --bind_all
+tensorboard --logdir=/root/data/$dir --bind_all

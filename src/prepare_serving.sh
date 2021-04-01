@@ -19,7 +19,7 @@ echo $fileName
 cd data/$dir/$fileName\_transformer_model
 
 # Generate serving config file
-models=$(ls -r export)
+models=$(ls -vr ./export)
 latestModel=$(echo $models | awk '{print $1;}')
 
 echo "**** Latest model: $latestModel (steps)"
@@ -28,9 +28,9 @@ echo "**** Latest model: $latestModel (steps)"
 rm -rf saved_model
 mkdir saved_model
 cd saved_model
-mkdir assets
+mkdir assets/
 mkdir variables
-cp ../../data/$fileName-$sl$tl.model assets/
+cp ../../$fileName-$sl$tl.model assets/
 cp ../export/$latestModel/assets/$fileName-$sl$tl.vocab assets/
 cp ../export/$latestModel/variables/* variables/
 cp ../export/$latestModel/saved_model.pb .
@@ -67,7 +67,7 @@ mv saved_model ../../models/${fileName}_transformer_model
 mv config.json ../../models/${fileName}_transformer_model
 cd ../..
 zip -r models.zip models
-chmod -R 777 ./
+# chmod -R 777 ./
 
 echo "Done!"
 
