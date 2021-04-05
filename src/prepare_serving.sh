@@ -31,30 +31,51 @@ cd saved_model
 mkdir assets/
 mkdir variables
 cp ../../$fileName-$sl$tl.model assets/
-cp ../export/$latestModel/assets/$fileName-$sl$tl.vocab assets/
+cp ../export/$latestModel/assets/*.vocab assets/
 cp ../export/$latestModel/variables/* variables/
 cp ../export/$latestModel/saved_model.pb .
 
 cd ..
 rm -rf config.json
 touch config.json
+# echo '
+# {
+#     "source": "'$sl'",
+#     "target": "'$tl'",
+#     "model": "'$fileName'_transformer_model",
+#     "modelType": "release",
+#     "tokenization": {
+#         "source": {
+#             "mode": "none",
+#             "sp_model_path": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.model",
+#             "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.vocab"
+#         },
+#         "target": {
+#             "mode": "none",
+#             "sp_model_path": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.model",
+#             "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.vocab"
+#         }
+#     }
+# }
+# ' >> config.json
+
 echo '
 {
     "source": "'$sl'",
     "target": "'$tl'",
     "model": "'$fileName'_transformer_model",
     "modelType": "release",
-    "tokenization": {
+    "vocabulary": {
         "source": {
-            "mode": "none",
-            "sp_model_path": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.model",
-            "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.vocab"
+            "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl'.vocab"
         },
         "target": {
-            "mode": "none",
-            "sp_model_path": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.model",
-            "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.vocab"
+            "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName-$tl'.vocab"
         }
+    },
+    "options": {
+        "model_type": "Transformer",
+        "auto_config": true
     }
 }
 ' >> config.json
@@ -67,7 +88,7 @@ mv saved_model ../../models/${fileName}_transformer_model
 mv config.json ../../models/${fileName}_transformer_model
 cd ../..
 zip -r models.zip models
-# chmod -R 777 ./
+chmod -R 777 models.zip
 
 echo "Done!"
 
