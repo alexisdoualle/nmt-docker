@@ -41,8 +41,8 @@ let linesWritten = 0;
 readInterfaceCorpus.on('line', function(line) {
     // for (word of Object.entries(allWords).sort((a, b) => b[1] - a[1])) {
     for (let word of wordsToFInd) {
-        let lineSplit = line.toLowerCase().split(/\t/);
-        if (lineSplit[0].indexOf(word) > -1) {
+        let lineSplit = line.split(/\t/);
+        if (lineSplit[0].toLowerCase().indexOf(word) > -1) {
             fs.appendFileSync(targetDirectory+'exportSegmentsInternetStores.en', lineSplit[0] + '\n');
             fs.appendFileSync(targetDirectory+'exportSegmentsInternetStores.nb', lineSplit[1] + '\n');
             

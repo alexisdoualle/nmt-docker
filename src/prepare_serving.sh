@@ -11,10 +11,6 @@ sl=$2
 tl=$3
 fileName=${1##*/}
 echo $fileName
-#dir=ENSV_Para_bikes
-#fileName=ENSV_Para_bikes
-#sl=en
-#tl=sv
 
 cd data/$dir/$fileName\_transformer_model
 
@@ -24,13 +20,12 @@ latestModel=$(echo $models | awk '{print $1;}')
 
 echo "**** Latest model: $latestModel (steps)"
 
-# Copy files in '1'
 rm -rf saved_model
 mkdir saved_model
 cd saved_model
 mkdir assets/
 mkdir variables
-cp ../../$fileName-$sl$tl.model assets/
+cp ../../$fileName.model assets/
 cp ../export/$latestModel/assets/*.vocab assets/
 cp ../export/$latestModel/variables/* variables/
 cp ../export/$latestModel/saved_model.pb .
@@ -38,26 +33,6 @@ cp ../export/$latestModel/saved_model.pb .
 cd ..
 rm -rf config.json
 touch config.json
-# echo '
-# {
-#     "source": "'$sl'",
-#     "target": "'$tl'",
-#     "model": "'$fileName'_transformer_model",
-#     "modelType": "release",
-#     "tokenization": {
-#         "source": {
-#             "mode": "none",
-#             "sp_model_path": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.model",
-#             "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.vocab"
-#         },
-#         "target": {
-#             "mode": "none",
-#             "sp_model_path": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.model",
-#             "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl$tl'.vocab"
-#         }
-#     }
-# }
-# ' >> config.json
 
 echo '
 {
@@ -67,15 +42,27 @@ echo '
     "modelType": "release",
     "vocabulary": {
         "source": {
-            "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName-$sl'.vocab"
+            "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName'.vocab"
         },
         "target": {
-            "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName-$tl'.vocab"
+            "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName'.vocab"
         }
     },
     "options": {
         "model_type": "Transformer",
         "auto_config": true
+    },
+    "tokenization": {
+        "source": {
+            "mode": "none",
+            "sp_model_path": "${MODEL_DIR}/saved_model/assets/'$fileName'.model",
+            "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName'.vocab"
+        },
+        "target": {
+            "mode": "none",
+            "sp_model_path": "${MODEL_DIR}/saved_model/assets/'$fileName'.model",
+            "vocabulary": "${MODEL_DIR}/saved_model/assets/'$fileName'.vocab"
+        }
     }
 }
 ' >> config.json
@@ -89,6 +76,7 @@ mv config.json ../../models/${fileName}_transformer_model
 cd ../..
 zip -r models.zip models
 chmod -R 777 models.zip
+chmod -R 777 models
 
 echo "Done!"
 
