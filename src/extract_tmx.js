@@ -29,6 +29,8 @@ if (!fs.existsSync(dirNameAfterExtraction)){
   fs.mkdirSync(dirNameAfterExtraction);
 }
 
+// Keep hash to check for duplicates, which should be avoided in NMT
+let record = {};
 
 tmxFileList.forEach(fileName => {
 
@@ -53,12 +55,17 @@ tmxFileList.forEach(fileName => {
     // Language check
     if (item.tuv[0].$['xml:lang'].substring(0,2) == sourceLanguage && item.tuv[1].$['xml:lang'].substring(0,2) == targetLanguage) {
       if (typeof item.tuv[0].seg == 'string') {
+        // No duplicates
+        if (record[item.tuv[0].seg.hashCode()]) return;
         stream1.write(item.tuv[0].seg + '\n');
         stream2.write(item.tuv[1].seg + '\n');
+        record[item.tuv[0].seg.hashCode()] = 1;
       } else {
         // TU contains bpt, get $text value
+        if (record[item.tuv[0].seg.$text]) return;
         stream1.write(item.tuv[0].seg.$text + '\n');
         stream2.write(item.tuv[1].seg.$text + '\n');
+        record[item.tuv[0].seg.$text.hashCode()] = 1;
       }
     }
     
@@ -81,3 +88,14 @@ tmxFileList.forEach(fileName => {
     }
   })
 })
+
+String.prototype.hashCode = function() {
+  var hash = 0, i, chr;
+  if (this.length === 0) return hash;
+  for (i = 0; i < this.length; i++) {
+    chr   = this.charCodeAt(i);
+    hash  = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+};
