@@ -31,7 +31,7 @@ node src/extract_tmx.js $sl $tl
 
 # set vocabulary and validation size
 vocab_size=16000
-validationSize=500
+validationSize=2000
 
 # create log output file
 # touch data/preprocess_and_train.log

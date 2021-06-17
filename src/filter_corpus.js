@@ -96,5 +96,5 @@ let wordsToFInd = [
 'dynamo',
 'polyurethane',
 'transmission',
-'high-performance',
+'high-performance'
 ]

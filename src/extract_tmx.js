@@ -52,6 +52,7 @@ tmxFileList.forEach(fileName => {
     // Language check
     if (item.tuv[0].$['xml:lang'].substring(0,2) == sourceLanguage && item.tuv[1].$['xml:lang'].substring(0,2) == targetLanguage) {
       if (typeof item.tuv[0].seg == 'string') {
+
         stream1.write(item.tuv[0].seg + '\n');
         stream2.write(item.tuv[1].seg + '\n');
       } else {

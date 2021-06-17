@@ -1,4 +1,6 @@
-data/
+data/*
+!data/txt
+data/txt/*
 src/node_modules/**
 node_modules
 src/data_to_extract/*
@@ -6,3 +8,4 @@ src/data_to_extract/*
 src/data_to_extract/tab_txt/*
 src/extracted_data/*
 !src/extracted_data/
+nmt_corpus/*
