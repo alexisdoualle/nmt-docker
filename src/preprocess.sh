@@ -47,7 +47,14 @@ cd data/$dir
 txt=../txt
 
 files=$txt/*
+nbFiles=${#files[@]}
 echo ""
+ls -l ../txt
+echo "Number of files: $nbFiles"
+if [ "$nbFiles" -eq "0" ]; then
+  echo "No files found, exiting";
+  exit;
+fi
 echo "Found following source files:"
 for file in $files; do
   echo $file
