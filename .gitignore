@@ -2,7 +2,8 @@ data/
 src/node_modules/**
 node_modules
 src/data_to_extract/*
-!src/data_to_extract/tab_txt/
+!src/data_to_extract/txt/
+src/data_to_extract/txt/*
 !src/data_to_extract/tmx/
 src/data_to_extract/tmx/*
 src/data_to_extract/tab_txt/*

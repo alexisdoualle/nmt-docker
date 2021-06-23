@@ -7,7 +7,7 @@ example:
 
 node extract_tab_separated.js en fr`); return }
 
-var dirNameToExtract = 'data_to_extract/tab_txt/';
+var dirNameToExtract = 'data_to_extract/txt/';
 var dirNameAfterExtraction = 'extracted_data/';
 var sourceLanguage = myArgs[0]
 var targetLanguage = myArgs[1]

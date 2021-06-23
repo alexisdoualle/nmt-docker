@@ -5,9 +5,9 @@ r:
 	make kill rm rn log
 
 shell:
-	make -k shel
+	make -k s1
 
-shel:
+s1:
 	make kill rm s
 
 build:
@@ -24,10 +24,10 @@ rm:
 	@sudo docker rm nmt
 rn:
 	@echo "\e[1m------------------------------- Launching wezenmt 🚀\e[0m"
-	@sudo docker run -d --name nmt -p 6006:6006 -v `pwd`/data:/root/data -v `pwd`/src:/root/src wezenmt studio en ja
+	@sudo docker run -d --name nmt -p 6006:6006 -v `pwd`/data:/root/data -v `pwd`/src:/root/src --gpus=all wezenmt nltcosmetics en fr
 
 s:
-	@sudo docker run --entrypoint bash -it --name nmt -p 6006:6006 -v `pwd`/data:/root/data -v `pwd`/src:/root/src wezenmt
+	@sudo docker run --entrypoint bash -it --name nmt -p 6006:6006 -v `pwd`/data:/root/data -v `pwd`/src:/root/src --gpus=all wezenmt
 
 attach_shell:
 	@sudo docker exec -it nmt bash

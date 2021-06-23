@@ -127,8 +127,9 @@ train:
   save_checkpoints_steps: 1000
   max_step: 1000000
   early_stopping:
-    min_improvement: 0.005
-    steps: 4
+    metric: bleu
+    min_improvement: 0.2
+    steps: 6
 
 eval:
   steps: 500

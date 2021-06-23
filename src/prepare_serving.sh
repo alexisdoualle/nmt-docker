@@ -98,3 +98,4 @@ echo "Done!"
 # echo ''
 # echo 'If image is running, POST on http://localhost:5000/translate with body: {"src": [{"text": "Hello"}]}'
 
+# aws cloudformation create-stack --stack-name wzn-nltcosmetics-prod-mt-en-fr --template-body file://13-infra-mt-serving-system.yml --parameters file://../../parameters/env/PROD/MT/NLT/COSMETICS/en-fr/13-parameters.json --capabilities CAPABILITY_NAMED_IAM
