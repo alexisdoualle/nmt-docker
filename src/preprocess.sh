@@ -26,8 +26,8 @@ fileName=$dir
 ls
 cd src
 npm install
+node tmx_extract.js $sl $tl
 cd ..
-node src/extract_tmx.js $sl $tl
 
 # set vocabulary and validation size
 vocab_size=16000
