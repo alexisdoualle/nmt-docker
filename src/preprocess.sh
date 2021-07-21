@@ -26,8 +26,8 @@ fileName=$dir
 ls
 cd src
 npm install
+node tmx_extract.js $sl $tl
 cd ..
-node src/extract_tmx.js $sl $tl
 
 # set vocabulary and validation size
 vocab_size=16000
@@ -127,8 +127,9 @@ train:
   save_checkpoints_steps: 1000
   max_step: 1000000
   early_stopping:
-    min_improvement: 0.005
-    steps: 4
+    metric: bleu
+    min_improvement: 0.2
+    steps: 6
 
 eval:
   steps: 500

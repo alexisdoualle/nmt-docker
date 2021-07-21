@@ -1,13 +1,18 @@
+/**
+ * From one file containing on each line the source and target translation, separated by a tab,
+ * create two files for source and target respectively
+ */
+
 const fs = require('fs');
 const readline = require('readline');
 
 var myArgs = process.argv.slice(2);
-if (myArgs.length < 2) { console.log(`Syntax: node TMXExtract.js sourceLang targetLang
+if (myArgs.length < 2) { console.log(`Syntax: node filename.js sourceLang targetLang
 example:
 
 node extract_tab_separated.js en fr`); return }
 
-var dirNameToExtract = 'data_to_extract/tab_txt/';
+var dirNameToExtract = 'data_to_extract/txt/';
 var dirNameAfterExtraction = 'extracted_data/';
 var sourceLanguage = myArgs[0]
 var targetLanguage = myArgs[1]

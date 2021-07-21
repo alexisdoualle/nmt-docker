@@ -17,9 +17,6 @@ var sourceLanguage = myArgs[0]
 var targetLanguage = myArgs[1]
 var tmxFileList;
 
-// tmxFileList = fs.readdirSync('./data'); 
-// console.log(tmxFileList);
-
 // return
 tmxFileList = fs.readdirSync(dirNameToExtract); 
 console.log(tmxFileList);
@@ -54,24 +51,23 @@ tmxFileList.forEach(fileName => {
     var efp = endFilePath
     // Language check
     if (item.tuv[0].$['xml:lang'].substring(0,2) == sourceLanguage && item.tuv[1].$['xml:lang'].substring(0,2) == targetLanguage) {
-      if (typeof item.tuv[0].seg == 'string') {
-
-        // No duplicates
-        if (record[item.tuv[0].seg.hashCode()]) return;
-        stream1.write(item.tuv[0].seg + '\n');
-        stream2.write(item.tuv[1].seg + '\n');
-        record[item.tuv[0].seg.hashCode()] = 1;
-      } else {
-        // TU contains bpt, get $text value
-        if (record[item.tuv[0].seg.$text]) return;
-        stream1.write(item.tuv[0].seg.$text + '\n');
-        stream2.write(item.tuv[1].seg.$text + '\n');
-        record[item.tuv[0].seg.$text.hashCode()] = 1;
+      let sourceSegment = item.tuv[0].seg.$text || item.tuv[0].seg;
+      if (typeof sourceSegment === 'object') {
+        if (sourceSegment.it) sourceSegment = sourceSegment.it; else return;
       }
+      let targetSegment = item.tuv[1].seg.$text || item.tuv[1].seg;
+      if (typeof targetSegment === 'object') {
+        if (targetSegment.it) targetSegment = targetSegment.it; else return;
+      }
+      // Check for duplicates
+      if (record[sourceSegment.hashCode()]) return;
+      i++
+      stream1.write(sourceSegment + '\n');
+      stream2.write(targetSegment + '\n');
+      record[sourceSegment.hashCode()] = 1;
     }
     
-    i++
-    if (i%1000 === 0) {
+    if (i%100 === 0) {
       if (process.stdout.clearLine) {
         process.stdout.clearLine();
         process.stdout.cursorTo(0);
@@ -79,15 +75,18 @@ tmxFileList.forEach(fileName => {
       }
     }
   });
-  xml.on('end', (item) => {
-    // clearLine may cause problem in docker container
-    if (process.stdout.clearLine) {
-      process.stdout.clearLine();
-      process.stdout.cursorTo(0);
-      process.stdout.write(i + ' lines extracted in ' + endFilePath+'.'+sourceLanguage +' and .'+targetLanguage);
-      process.stdout.write("\n")
-    }
-  })
+  // xml.on('end', (item) => {
+  //   // clearLine may cause problems in a docker container
+  //   if (process.stdout.clearLine) {
+  //     process.stdout.clearLine();
+  //     process.stdout.cursorTo(0);
+  //     process.stdout.write(i + ' lines extracted in ' + endFilePath+'.'+sourceLanguage +' and .'+targetLanguage);
+  //     process.stdout.write("\n")
+  //   }
+  // });
+  xml.on('error', function (err) {
+    console.log(err);
+  });
 })
 
 String.prototype.hashCode = function() {
