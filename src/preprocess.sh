@@ -26,7 +26,8 @@ fileName=$dir
 ls
 cd src
 npm install
-node tmx_extract.js $sl $tl
+node tmx-extract.js $sl $tl
+node txt-extract.js $sl $tl
 cd ..
 
 # set vocabulary and validation size
@@ -44,7 +45,7 @@ mkdir data/$dir
 
 cd data/$dir
 # Path where the source text files are located
-txt=../txt
+txt=../extracted_data
 
 files=$txt/*
 nbFiles=${#files[@]}
@@ -125,11 +126,11 @@ data:
 
 train:
   save_checkpoints_steps: 1000
-  max_step: 1000000
+  max_step: 100000
   early_stopping:
-    metric: bleu
-    min_improvement: 0.2
-    steps: 6
+    metric: loss
+    min_improvement: 0.01
+    steps: 4
 
 eval:
   steps: 500

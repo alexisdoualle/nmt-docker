@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const XmlStream = require('xml-stream');
 
 var myArgs = process.argv.slice(2);
@@ -11,13 +12,14 @@ node TMXExtract.js en fr`); return }
  * Extract source and target from Translation Memories for MT training
  * 1 TM segment => 1 plain text line in each file (source and target)
  */
-var dirNameToExtract = 'data_to_extract/tmx/';
-var dirNameAfterExtraction = 'extracted_data/';
+var dirNameToExtract = '../data/data_to_extract/tmx/';
+var dirNameAfterExtraction = '../data/extracted_data/';
+let archiveDir = '../data/archive/'
 var sourceLanguage = myArgs[0]
 var targetLanguage = myArgs[1]
 var tmxFileList;
 
-// return
+oldFileList = fs.readdirSync(dirNameAfterExtraction);
 tmxFileList = fs.readdirSync(dirNameToExtract); 
 console.log(tmxFileList);
 
@@ -25,6 +27,14 @@ console.log(tmxFileList);
 if (!fs.existsSync(dirNameAfterExtraction)){
   fs.mkdirSync(dirNameAfterExtraction);
 }
+
+oldFileList.forEach(file => {
+  fs.unlink(path.join(dirNameAfterExtraction, file), err => {
+    if (err) throw err;
+  });
+
+});
+
 
 // Keep hash to check for duplicates, which should be avoided in NMT
 let record = {};
@@ -67,23 +77,30 @@ tmxFileList.forEach(fileName => {
       record[sourceSegment.hashCode()] = 1;
     }
     
-    if (i%100 === 0) {
+    if (i !== 0 && i%100 === 0) {
+      let output = i + ' lines extracted in ' + efp+'.'+sourceLanguage +' and .'+targetLanguage;
       if (process.stdout.clearLine) {
         process.stdout.clearLine();
         process.stdout.cursorTo(0);
-        process.stdout.write(i + ' lines extracted in ' + efp+'.'+sourceLanguage +' and .'+targetLanguage);
+        process.stdout.write(output);
+      } else {
+        // Inside Docker
+        if (i%10000 === 0) console.log(output);
       }
     }
   });
-  // xml.on('end', (item) => {
-  //   // clearLine may cause problems in a docker container
-  //   if (process.stdout.clearLine) {
-  //     process.stdout.clearLine();
-  //     process.stdout.cursorTo(0);
-  //     process.stdout.write(i + ' lines extracted in ' + endFilePath+'.'+sourceLanguage +' and .'+targetLanguage);
-  //     process.stdout.write("\n")
-  //   }
-  // });
+  xml.on('end', (item) => {
+    let output = i + ' line' + (i > 1 ? 's' : '') + ' extracted in ' + endFilePath+'.'+sourceLanguage +' and .'+targetLanguage;
+    // clearLine may cause problems in a docker container
+    if (process.stdout.clearLine) {
+      process.stdout.clearLine();
+      process.stdout.cursorTo(0);
+      process.stdout.write();
+      process.stdout.write("\n")
+    } else {
+      console.log(output);
+    }
+  });
   xml.on('error', function (err) {
     console.log(err);
   });

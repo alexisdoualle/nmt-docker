@@ -10,10 +10,10 @@ var myArgs = process.argv.slice(2);
 if (myArgs.length < 2) { console.log(`Syntax: node filename.js sourceLang targetLang
 example:
 
-node extract_tab_separated.js en fr`); return }
+node txt-extract.js en fr`); return }
 
-var dirNameToExtract = 'data_to_extract/txt/';
-var dirNameAfterExtraction = 'extracted_data/';
+var dirNameToExtract = '../data/data_to_extract/txt/';
+var dirNameAfterExtraction = '../data/extracted_data/';
 var sourceLanguage = myArgs[0]
 var targetLanguage = myArgs[1]
 var txtFileList;

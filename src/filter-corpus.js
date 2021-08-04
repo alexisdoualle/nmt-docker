@@ -1,3 +1,15 @@
+/**
+ * (Rudimentary implemtation)
+ * Reduces the size of a txt training corpus by searching for keywords and removing all sentences without at least one of them
+ * 
+ * Example: using Paracrawl data, which takes bilingual content from the entire web, 
+ * only keep sentences relevant to what the engine is used for (ie, no need for politics when training for a fashion e-commerce site).
+ * Paracrawl can have many millions of sentences, and most will never be used to train a single engine in a reasonable time
+ * 
+ * Use a list of most used words from a relevant source and add it below
+ * 
+ * TODO: A better implementation would use Word Embeddings to look for relevent content 
+ */
 fs = require('fs');
 const { exec, execSync } = require("child_process");
 const { write } = require('fs');
@@ -40,7 +52,7 @@ let linesWritten = 0;
 
 readInterfaceCorpus.on('line', function(line) {
     // for (word of Object.entries(allWords).sort((a, b) => b[1] - a[1])) {
-    for (let word of wordsToFInd) {
+    for (let word of wordsToFind) {
         let lineSplit = line.split(/\t/);
         if (lineSplit[0].toLowerCase().indexOf(word) > -1) {
             fs.appendFileSync(targetDirectory+'exportSegmentsInternetStores.en', lineSplit[0] + '\n');
@@ -54,7 +66,7 @@ readInterfaceCorpus.on('line', function(line) {
     linesRead++;
     if (linesRead%100000 === 0) console.log(linesRead + " lines read from source file");
 });
-let wordsToFInd = [
+let wordsToFind = [
 'bike',
 'shimano',
 'helmet',
