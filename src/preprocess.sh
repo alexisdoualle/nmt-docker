@@ -3,9 +3,6 @@
 ##################################################################################
 # Preprocess Data for training a custom MT engine.
 #
-# Developped from https://github.com/OpenNMT/OpenNMT-tf/blob/master/scripts/mf/prepare_data.sh
-#
-# Expects two files (<fileName>), plain text, source and target (file extensions), with parallel lines
 ##################################################################################
 
 # Files and directory
@@ -14,6 +11,7 @@ dir=$1
 sl=$2
 tl=$3
 
+# for 4 GPUs: CUDA_VISIBLE_DEVICES=0,1,2,3
 export CUDA_VISIBLE_DEVICES=0
 export NVIDIA_VISIBLE_DEVICES=all
 export NVIDIA_DRIVER_CAPABILITIES=compute,utility
@@ -22,7 +20,7 @@ export TF_FORCE_GPU_ALLOW_GROWTH=true
 # filename same value as dir
 fileName=$dir
 
-# Extract data from TMX files
+# Extract data from TMX or text files
 ls
 cd src
 npm install
@@ -126,7 +124,7 @@ data:
 
 train:
   save_checkpoints_steps: 1000
-  max_step: 100000
+  max_step: 70000
   early_stopping:
     metric: loss
     min_improvement: 0.01
@@ -203,7 +201,7 @@ onmt-main --model_type Transformer --config config.yml --auto_config --gpu_allow
 # After training is completed
 cd ../..
 # chmod -R 777 ./
-./src/prepare_serving.sh $1 $2 $3
+./src/export_model.sh $1 $2 $3
 
 # zip -R $fileName_transformer_model/export/
 
