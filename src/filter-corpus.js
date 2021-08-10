@@ -1,5 +1,5 @@
 /**
- * (Rudimentary implemtation)
+ * (Rudimentary implementation)
  * Reduces the size of a txt training corpus by searching for keywords and removing all sentences without at least one of them
  * 
  * Example: using Paracrawl data, which takes bilingual content from the entire web, 
@@ -27,7 +27,7 @@ let targetDirectory = 'extracted_data/';
 // });
 
 const readInterfaceCorpus = readline.createInterface({
-    input: fs.createReadStream(sourceDirectory + 'en-nb.txt'),
+    input: fs.createReadStream(sourceDirectory + 'en-fi.txt'),
     console: false
 });
 
@@ -56,7 +56,7 @@ readInterfaceCorpus.on('line', function(line) {
         let lineSplit = line.split(/\t/);
         if (lineSplit[0].toLowerCase().indexOf(word) > -1) {
             fs.appendFileSync(targetDirectory+'exportSegmentsInternetStores.en', lineSplit[0] + '\n');
-            fs.appendFileSync(targetDirectory+'exportSegmentsInternetStores.nb', lineSplit[1] + '\n');
+            fs.appendFileSync(targetDirectory+'exportSegmentsInternetStores.fi', lineSplit[1] + '\n');
             
             linesWritten++;
             if (linesWritten%10000 === 0) console.log(linesWritten + " lines WRITTEN to target file");

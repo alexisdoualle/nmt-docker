@@ -124,7 +124,7 @@ data:
 
 train:
   save_checkpoints_steps: 1000
-  max_step: 70000
+  max_step: 150000
   early_stopping:
     metric: loss
     min_improvement: 0.01
