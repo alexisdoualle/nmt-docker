@@ -8,6 +8,7 @@ ENV LANG=C.UTF-8
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        nodejs \
         libnvinfer6=6.0.1-1+cuda10.1 \
         libnvinfer-plugin6=6.0.1-1+cuda10.1 \
         python3-distutils \
@@ -26,7 +27,7 @@ RUN python3 -m pip --no-cache-dir install -r /root/base_requirements.txt -r /roo
 RUN apt-get update && \
     apt-get install -y zip
 
-COPY ./src/start.sh /
+COPY ./src/start.sh /    
 RUN chmod +x /start.sh
 
 ENTRYPOINT ["sh", "/start.sh"]
