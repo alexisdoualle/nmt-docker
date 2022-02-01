@@ -3,12 +3,25 @@ FROM nvidia/cuda:10.1-cudnn7-runtime-ubuntu18.04
 
 WORKDIR /root
 
+ENV NODE_VERSION=10.24.1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV LANG=C.UTF-8
+
+# RUN apt-get update && \
+#     apt-get install wget curl ca-certificates rsync -y
+# RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+# ENV NVM_DIR=/root/.nvm
+# RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
+# RUN . "$NVM_DIR/nvm.sh" &&  nvm use v${NODE_VERSION}
+# RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
+# RUN cp /root/.nvm/versions/node/v${NODE_VERSION}/bin/node /usr/bin/
+# RUN cp /root/.nvm/versions/node/v${NODE_VERSION}/bin/npm /usr/bin/
+# RUN /root/.nvm/versions/node/v${NODE_VERSION}/bin/npm install  leasot@latest -g
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         nodejs \
+        npm \
         libnvinfer6=6.0.1-1+cuda10.1 \
         libnvinfer-plugin6=6.0.1-1+cuda10.1 \
         python3-distutils \

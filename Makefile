@@ -24,7 +24,7 @@ rm:
 	@sudo docker rm nmt
 rn:
 	@echo "\e[1m------------------------------- Launching wezenmt 🚀\e[0m"
-	@sudo docker run -d --name nmt -p 6006:6006 -v `pwd`/data:/root/data -v `pwd`/src:/root/src --gpus=all wezenmt nltfashion fr es
+	@sudo docker run -d --name nmt -p 6006:6006 -v `pwd`/data:/root/data -v `pwd`/src:/root/src --gpus=all wezenmt nltfashion fr de
 
 s:
 	@sudo docker run --entrypoint bash -it --name nmt -p 6006:6006 -v `pwd`/data:/root/data -v `pwd`/src:/root/src --gpus=all wezenmt

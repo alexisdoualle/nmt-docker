@@ -21,12 +21,30 @@ export TF_FORCE_GPU_ALLOW_GROWTH=true
 fileName=$dir
 
 # Extract data from TMX or text files
+echo '
+******************
+***** STEP 1 *****
+******************
+NODE Scripts
+'
+echo 'ls: '
 ls
+echo ''
+echo 'node -v'
+node -v
+echo ''
 cd src
-npm install
+npm install -g
 node tmx-extract.js $sl $tl
 node txt-extract.js $sl $tl
 cd ..
+
+echo '
+******************
+***** STEP 2 *****
+******************
+Old data cleaning
+'
 
 # set vocabulary and validation size
 vocab_size=16000
