@@ -1,9 +1,9 @@
 
-FROM nvidia/cuda:10.1-cudnn7-runtime-ubuntu18.04
+FROM nvidia/cuda:10.1-cudnn7-runtime-ubuntu20.04
 
 WORKDIR /root
 
-ENV NODE_VERSION=10.24.1
+ENV NODE_VERSION=14.19.0
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV LANG=C.UTF-8
 
@@ -20,13 +20,22 @@ ENV LANG=C.UTF-8
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        wget \
         nodejs \
         npm \
         libnvinfer6=6.0.1-1+cuda10.1 \
         libnvinfer-plugin6=6.0.1-1+cuda10.1 \
         python3-distutils \
-        wget \
+        build-essential \
         && \
+
+    # wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz && \
+    # tar -xf Python-3.7.4.tgz && \
+    # cd Python-3.7.4 && \
+    # ./configure --enable-optimizations && \
+    # make -j$(nproc) && \
+    # sudo make altinstall \
+
     wget -nv https://bootstrap.pypa.io/get-pip.py && \
     python3 get-pip.py && \
     rm get-pip.py && \

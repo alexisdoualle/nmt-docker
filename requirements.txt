@@ -1,2 +1,2 @@
-tensorflow==2.4.*
-https://github.com/OpenNMT/OpenNMT-tf/archive/12a3c55ccf2bb246f6dc236b012ee04611e99f24.tar.gz
+tensorflow==2.6.*
+https://github.com/OpenNMT/OpenNMT-tf/archive/refs/tags/v2.24.0.tar.gz
